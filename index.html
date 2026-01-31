@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All ma Danse - Le Jeu</title>
-    <!-- Importation de polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Quicksand:wght@300;400;600&family=WindSong&display=swap" rel="stylesheet">
@@ -19,8 +18,8 @@
             --btn-blue-hover: #2980b9;
             --btn-gold: #d4af37;
             --btn-gold-hover: #b4942b;
-            --btn-music: #e74c3c;
-            --btn-music-hover: #c0392b;
+            --btn-music: #1DB954; /* Spotify Green */
+            --btn-music-hover: #1ed760;
         }
 
         body, html {
@@ -247,7 +246,7 @@
 
         .card-main-text {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: clamp(1rem, 2.5vh, 1.6rem);
+            font-size: clamp(1rem, 2.2vh, 1.4rem); /* Légèrement ajusté pour les longs titres */
             text-align: center;
             color: #333;
             margin: 1vh 0;
@@ -275,29 +274,47 @@
             color: #d4af37;
         }
 
-        /* UI Bas de page */
+        /* UI Bas de page - MODIFIÉ */
         .final-ui-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column; /* Colonne pour mettre le texte au dessus des boutons */
             align-items: center;
             justify-content: center;
             gap: 15px;
             width: 100%;
-            height: 10vh;
-            margin-top: 1vh;
+            margin-top: 2vh;
             opacity: 0;
             transition: opacity 0.5s;
+            pointer-events: none; /* Inactif tant que pas visible */
         }
         
-        .final-ui-container.visible { opacity: 1; }
+        .final-ui-container.visible { opacity: 1; pointer-events: auto; }
+
+        .final-text-large {
+            font-family: 'WindSong', cursive;
+            font-size: clamp(2rem, 5vh, 3.5rem);
+            color: var(--accent-violet);
+            text-align: center;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .buttons-row {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
         .btn-action {
-            padding: 1vh 2vw;
+            padding: 1.2vh 2.5vw;
             border-radius: 30px;
             cursor: pointer;
             font-family: 'Quicksand', sans-serif;
             font-weight: 600;
-            font-size: clamp(0.8rem, 2vh, 1rem);
+            font-size: clamp(0.9rem, 2vh, 1.1rem);
             transition: all 0.3s;
             display: flex;
             align-items: center;
@@ -321,12 +338,12 @@
         .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6); }
 
         .btn-music {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            background: linear-gradient(45deg, #1DB954, #19a347);
             border: none;
             color: white;
-            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.4);
+            box-shadow: 0 4px 10px rgba(29, 185, 84, 0.4);
         }
-        .btn-music:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(192, 57, 43, 0.6); }
+        .btn-music:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(29, 185, 84, 0.6); }
 
         /* Pop-up Conseil */
         #advice-overlay {
@@ -375,7 +392,10 @@
         .border-rect {
             fill: none; stroke: var(--accent-violet); stroke-width: 4;
             stroke-dasharray: 3000; stroke-dashoffset: 3000; rx: 20;
+            opacity: 0; /* Caché au départ */
+            transition: opacity 1s ease;
         }
+        .border-rect.visible { opacity: 1; }
         .animate-border { animation: drawBorder 2s ease-out forwards; }
         @keyframes drawBorder { to { stroke-dashoffset: 0; } }
 
@@ -391,19 +411,16 @@
 </head>
 <body>
 
-    <!-- Overlay Rotation pour Mobile -->
     <div id="rotate-overlay">
         <div class="rotate-icon">📱</div>
         <h2>Pour une meilleure expérience</h2>
         <p>Veuillez tourner votre appareil à l'horizontale</p>
     </div>
 
-    <!-- Fond -->
     <div class="bg-pattern"></div>
 
     <div id="app-container">
         
-        <!-- ÉCRAN D'ACCUEIL -->
         <div id="intro-screen">
             <div class="presentation-card">
                 <div class="card-decoration">✨</div>
@@ -418,7 +435,6 @@
             </div>
         </div>
 
-        <!-- ÉCRAN DE JEU -->
         <div id="game-screen">
             
             <div class="cards-container" id="cards-box">
@@ -426,29 +442,29 @@
                     <rect id="violet-border" x="0" y="0" width="100%" height="100%" class="border-rect" />
                 </svg>
 
-                <!-- SLOTS -->
                 <div class="slot-machine" id="slot-1"><div class="slot-strip" id="strip-1"></div></div>
                 <div class="slot-machine" id="slot-2"><div class="slot-strip" id="strip-2"></div></div>
                 <div class="slot-machine" id="slot-3"><div class="slot-strip" id="strip-3"></div></div>
             </div>
 
             <div class="final-ui-container" id="ui-buttons">
-                <div style="font-family: 'WindSong'; font-size: 1.5rem; color: var(--accent-violet); margin-right: 10px;">A vous de jouer !</div>
+                <div class="final-text-large">A vous de jouer !</div>
                 
-                <button class="btn-action btn-ai" onclick="showAdvice()">
-                    <span>Conseil du Coach ✨</span>
-                </button>
-                
-                <button class="btn-action btn-music" onclick="openMusic()">
-                    <span>Une musique ? 🎵</span>
-                </button>
-                
-                <button class="btn-action btn-replay" onclick="resetAndReplay()">
-                    Recommencer ↻
-                </button>
+                <div class="buttons-row">
+                    <button class="btn-action btn-ai" onclick="showAdvice()">
+                        <span>Inspirer ma danse ✨</span>
+                    </button>
+                    
+                    <button class="btn-action btn-music" onclick="openMusic()">
+                        <span>Une musique ? 🎵</span>
+                    </button>
+                    
+                    <button class="btn-action btn-replay" onclick="resetAndReplay()">
+                        Recommencer ↻
+                    </button>
+                </div>
             </div>
 
-            <!-- BOITE DE CONSEIL -->
             <div id="advice-overlay">
                 <div class="close-advice" onclick="hideAdvice()">×</div>
                 <div class="advice-text" id="advice-content"></div>
@@ -459,8 +475,7 @@
     </div>
 
     <script>
-        // --- DONNÉES ---
-        // Ajout de tags pour la logique "système expert"
+        // --- DONNÉES MISES À JOUR (Selon PDF) ---
         const dataElements = [
             { title: "ARGILE", desc: "absorbe", cat: "Terre", icon: "🏺", tags: ["terre", "lourd", "lent"] },
             { title: "SABLE", desc: "coule - roule - bâti", cat: "Terre", icon: "🏖️", tags: ["terre", "fluide", "granuleux"] },
@@ -489,57 +504,58 @@
         ];
 
         const dataTissus = [
-            { title: "OS", desc: "support – structure", cat: "Tissus", icon: "🦴", tags: ["structure", "dur"] },
-            { title: "ARTICULATIONS", desc: "plier - rotation", cat: "Tissus", icon: "🔩", tags: ["mécanique", "charnière"] },
-            { title: "MUSCLES", desc: "contracter – étirer", cat: "Tissus", icon: "💪", tags: ["force", "action"] },
-            { title: "LIGAMENTS", desc: "lier - tenir - élastique", cat: "Tissus", icon: "🔗", tags: ["lien", "tension"] },
-            { title: "FASCIAS", desc: "réseau – omniprésence", cat: "Tissus", icon: "🕸️", tags: ["global", "connectif"] },
-            { title: "LIQUIDES", desc: "sang, eaux, lymphe", cat: "Tissus", icon: "🩸", tags: ["flux", "interne"] },
-            { title: "ORGANES", desc: "fonction – poids", cat: "Tissus", icon: "🫀", tags: ["organique", "profond"] },
-            { title: "PEAU", desc: "couvre – protège", cat: "Tissus", icon: "✋", tags: ["surface", "sensible"] },
-            { title: "HORMONES", desc: "véhicule – émotions", cat: "Tissus", icon: "💊", tags: ["chimie", "humeur"] },
-            { title: "CELLULE", desc: "unité – frémis", cat: "Tissus", icon: "🦠", tags: ["micro", "vibration"] },
-            { title: "NEURONES", desc: "informe – impulse", cat: "Tissus", icon: "🧠", tags: ["électrique", "rapide"] },
-            { title: "NERFS", desc: "transmettre - commander", cat: "Tissus", icon: "⚡", tags: ["ligne", "signal"] }
+            { title: "OS", desc: "support – structure - permanence", cat: "Tissus", icon: "🦴", tags: ["structure", "dur"] },
+            { title: "ARTICULATIONS", desc: "mouvement - plier - rotation", cat: "Tissus", icon: "🔩", tags: ["mécanique", "charnière"] },
+            { title: "MUSCLES", desc: "contracter – étirer - expandre", cat: "Tissus", icon: "💪", tags: ["force", "action"] },
+            { title: "LIGAMENTS & TENDONS", desc: "lier - tenir - élastique", cat: "Tissus", icon: "🔗", tags: ["lien", "tension"] },
+            { title: "FASCIAS", desc: "réseau – omniprésence - coulisse", cat: "Tissus", icon: "🕸️", tags: ["global", "connectif"] },
+            { title: "LIQUIDES", desc: "sang, eaux, lymphe - échange", cat: "Tissus", icon: "🩸", tags: ["flux", "interne"] },
+            { title: "ORGANES", desc: "fonction – poids - consistance", cat: "Tissus", icon: "🫀", tags: ["organique", "profond"] },
+            { title: "PEAU", desc: "couvre – protège - contient", cat: "Tissus", icon: "✋", tags: ["surface", "sensible"] },
+            { title: "HORMONES", desc: "véhicule – régule - émotions", cat: "Tissus", icon: "💊", tags: ["chimie", "humeur"] },
+            { title: "CELLULE", desc: "unité – relais - frémis", cat: "Tissus", icon: "🦠", tags: ["micro", "vibration"] },
+            { title: "NEURONES", desc: "informe – relie - impulse", cat: "Tissus", icon: "🧠", tags: ["électrique", "rapide"] },
+            { title: "NERFS", desc: "transmettre - sensibiliser - commander", cat: "Tissus", icon: "⚡", tags: ["ligne", "signal"] }
         ];
 
         const dataMouvements = [
-            { title: "GRAVITÉ", desc: "chute – poids", cat: "Mouvement", icon: "⬇️", tags: ["bas", "lacher"] },
-            { title: "ÉRECTION", desc: "opposer – redresser", cat: "Mouvement", icon: "⬆️", tags: ["haut", "grandir"] },
-            { title: "SYNERGIE", desc: "continuer – tourner", cat: "Mouvement", icon: "🎡", tags: ["cycle", "ensemble"] },
-            { title: "MOMENTUM", desc: "étendre – spirale", cat: "Mouvement", icon: "🐌", tags: ["élan", "courbe"] },
-            { title: "IMMOBILISATION", desc: "freiner - stopper", cat: "Mouvement", icon: "🛑", tags: ["stop", "pause"] },
-            { title: "IDENTIFICATION", desc: "plonger - focusser", cat: "Mouvement", icon: "🎯", tags: ["précis", "regard"] },
-            { title: "AMPLIFICATION", desc: "augmenter - agrandir", cat: "Mouvement", icon: "🔊", tags: ["grand", "volume"] },
-            { title: "LAISSER ALLER", desc: "suivre - amuser", cat: "Mouvement", icon: "🎈", tags: ["jeu", "libre"] },
-            { title: "TRANSFORMATION", desc: "orienter - changer", cat: "Mouvement", icon: "🦋", tags: ["métamorphose", "autre"] },
-            { title: "IMPULSER", desc: "informer – toucher", cat: "Mvt à 2", icon: "🤜", tags: ["contact", "donner"] },
-            { title: "SOUTENIR", desc: "appuyer – recevoir", cat: "Mvt à 2", icon: "🤲", tags: ["support", "accueil"] },
-            { title: "PORTER", desc: "élever – permettre", cat: "Mvt à 2", icon: "🏗️", tags: ["poids", "soulever"] },
-            { title: "POUSSER", desc: "inviter - entrer", cat: "Mvt à 2", icon: "🌬️", tags: ["pression", "déplacer"] },
-            { title: "REFLÉTER", desc: "miroir – reproduire", cat: "Mvt à 2", icon: "🪞", tags: ["écho", "copie"] },
-            { title: "PRESSER", desc: "compression – concentrer", cat: "Mvt à 2", icon: "🤏", tags: ["serrer", "intensifier"] },
-            { title: "ÉTIRER", desc: "possibles – fibres", cat: "Mvt à 2", icon: "🤸", tags: ["loin", "extension"] },
-            { title: "EFFLEURER", desc: "sensibiliser - éveiller", cat: "Mvt à 2", icon: "🪶", tags: ["peau", "doux"] },
-            { title: "ÊTRE AVEC", desc: "écouter - harmoniser", cat: "Mvt à 2", icon: "🤝", tags: ["présence", "uni"] }
+            { title: "GRAVITÉ", desc: "chute – poids - relâchement", cat: "Mouvement", icon: "⬇️", tags: ["bas", "lacher"] },
+            { title: "ÉRECTION", desc: "opposer – redresser - lever", cat: "Mouvement", icon: "⬆️", tags: ["haut", "grandir"] },
+            { title: "SYNERGIE", desc: "continuer – tourner - toupie", cat: "Mouvement", icon: "🎡", tags: ["cycle", "ensemble"] },
+            { title: "MOMENTUM", desc: "étendre – inscrire - spirale", cat: "Mouvement", icon: "🐌", tags: ["élan", "courbe"] },
+            { title: "IMMOBILISATION", desc: "freiner - stopper - préciser", cat: "Mouvement", icon: "🛑", tags: ["stop", "pause"] },
+            { title: "IDENTIFICATION", desc: "plonger - focusser - déterminer", cat: "Mouvement", icon: "🎯", tags: ["précis", "regard"] },
+            { title: "AMPLIFICATION", desc: "augmenter - agrandir - accroitre", cat: "Mouvement", icon: "🔊", tags: ["grand", "volume"] },
+            { title: "LAISSER ALLER", desc: "suivre - amuser - simplifier", cat: "Mouvement", icon: "🎈", tags: ["jeu", "libre"] },
+            { title: "TRANSFORMATION", desc: "orienter - changer - créer", cat: "Mouvement", icon: "🦋", tags: ["métamorphose", "autre"] },
+            { title: "IMPULSER", desc: "informer – toucher - produire", cat: "Mvt à 2", icon: "🤜", tags: ["contact", "donner"] },
+            { title: "SOUTENIR", desc: "appuyer – recevoir - présence", cat: "Mvt à 2", icon: "🤲", tags: ["support", "accueil"] },
+            { title: "PORTER", desc: "élever – permettre - collaborer", cat: "Mvt à 2", icon: "🏗️", tags: ["poids", "soulever"] },
+            { title: "POUSSER et INSUFFLER", desc: "inviter - entrer - souffler", cat: "Mvt à 2", icon: "🌬️", tags: ["pression", "déplacer"] },
+            { title: "REFLÉTER", desc: "miroir – reproduire - servir", cat: "Mvt à 2", icon: "🪞", tags: ["écho", "copie"] },
+            { title: "PRESSER et APPUYER", desc: "compression – ressentir - concentrer", cat: "Mvt à 2", icon: "🤏", tags: ["serrer", "intensifier"] },
+            { title: "ÉTIRER et ÉTENDRE", desc: "possibles – fibres - espace", cat: "Mvt à 2", icon: "🤸", tags: ["loin", "extension"] },
+            { title: "EFFLEURER et TOUCHER", desc: "sensibiliser - orienter - éveiller", cat: "Mvt à 2", icon: "🪶", tags: ["peau", "doux"] },
+            { title: "ÊTRE AVEC et ACCORDER", desc: "écouter - harmoniser - accueillir", cat: "Mvt à 2", icon: "🤝", tags: ["présence", "uni"] }
         ];
 
-        // --- PLAYLIST MUSICALE (Youtube) ---
+        // --- PLAYLIST MUSICALE (Spotify Search Links) ---
+        // Utilisation de liens de recherche pour garantir que l'utilisateur tombe sur une liste valide
         const musicDatabase = [
-            { id: "sitar", url: "https://www.youtube.com/watch?v=8CinhqTb32I", tags: ["espace", "vibration", "subtil", "micro"] }, // Sitar meditative
-            { id: "glass", url: "https://www.youtube.com/watch?v=6Stu7h7Qup8", tags: ["structure", "os", "repetitif", "glace", "cristallin"] }, // Philip Glass
-            { id: "kodo", url: "https://www.youtube.com/watch?v=C7HL5wYqAbU", tags: ["feu", "muscle", "puissant", "impact", "volcan", "terre"] }, // Kodo Drums
-            { id: "ambient", url: "https://www.youtube.com/watch?v=il4VDf-UgHs", tags: ["eau", "fluide", "calme", "lacher", "douceur"] }, // Water ambience
-            { id: "maxrichter", url: "https://www.youtube.com/watch?v=rVN1B-tUpgs", tags: ["triste", "émotion", "fascias", "lien", "memoire"] }, // Max Richter
-            { id: "experimental", url: "https://www.youtube.com/watch?v=y2d5O3a-uN8", tags: ["air", "bizarre", "nerfs", "électrique", "chaos"] }, // Experimental
-            { id: "cello", url: "https://www.youtube.com/watch?v=nQ798THmrpU", tags: ["corps", "profond", "organique", "gravité"] }, // Cello
-            { id: "piano", url: "https://www.youtube.com/watch?v=HuYlJt_R1AQ", tags: ["neige", "léger", "froid", "mental", "neurones"] } // Nils Frahm style
+            { id: "sitar", url: "https://open.spotify.com/search/sitar%20meditation", tags: ["espace", "vibration", "subtil", "micro"] }, 
+            { id: "glass", url: "https://open.spotify.com/search/philip%20glass%20piano", tags: ["structure", "os", "repetitif", "glace", "cristallin"] }, 
+            { id: "kodo", url: "https://open.spotify.com/search/kodo%20drums", tags: ["feu", "muscle", "puissant", "impact", "volcan", "terre"] }, 
+            { id: "ambient", url: "https://open.spotify.com/search/water%20ambient%20sounds", tags: ["eau", "fluide", "calme", "lacher", "douceur"] }, 
+            { id: "maxrichter", url: "https://open.spotify.com/search/max%20richter%20melancholy", tags: ["triste", "émotion", "fascias", "lien", "memoire"] }, 
+            { id: "experimental", url: "https://open.spotify.com/search/experimental%20electronic%20music", tags: ["air", "bizarre", "nerfs", "électrique", "chaos"] }, 
+            { id: "cello", url: "https://open.spotify.com/search/cello%20solo%20bach", tags: ["corps", "profond", "organique", "gravité"] }, 
+            { id: "piano", url: "https://open.spotify.com/search/nils%20frahm%20piano", tags: ["neige", "léger", "froid", "mental", "neurones"] } 
         ];
 
         // --- VARIABLES GLOBALES ---
         let currentDraw = { element: null, tissu: null, movement: null };
-        let lastDrawIndices = { strip1: 0, strip2: 0, strip3: 0 }; // Indices des cartes gagnantes précédentes
-        const stripHeight = 60; // Nombre de cartes dans la bande (pour l'illusion infinie)
+        let lastDrawIndices = { strip1: 0, strip2: 0, strip3: 0 }; 
+        const stripHeight = 60; 
         
         // --- LOGIQUE D'AFFICHAGE ---
 
@@ -558,9 +574,7 @@
 
         function buildStripHTML(dataSource) {
             let html = "";
-            // On construit une bande géante de 60 cartes en répétant le dataset
             for (let i = 0; i < stripHeight; i++) {
-                // Pour avoir une variété, on boucle sur les données
                 const dataIndex = i % dataSource.length;
                 html += createCardHTML(dataSource[dataIndex], dataIndex);
             }
@@ -582,26 +596,18 @@
 
                 setTimeout(() => {
                     document.getElementById('game-screen').style.opacity = '1';
-                    // Premier lancement : on démarre du bas vers le haut (pour simuler la chute)
-                    // On positionne initialement les bandes tout en bas pour qu'elles remontent vers 0 (chute visuelle)
                     initializePositions();
                     launchSlots();
                 }, 100);
             }, 800);
         }
 
-        // Fonction pour positionner les bandes avant le lancer
-        // Pour l'effet "chute" (cartes descendent), le strip doit bouger vers le BAS (translateY augmente)
-        // Donc on part d'une valeur négative (haut caché) vers une valeur proche de 0 (haut visible)
         function initializePositions() {
             const cardH = document.querySelector('.game-card').offsetHeight;
             const strips = ['strip-1', 'strip-2', 'strip-3'];
             
             strips.forEach(id => {
                 const el = document.getElementById(id);
-                // On commence à un endroit aléatoire "haut" dans la bande (ex: index 50)
-                // Rappel : translateY(-50 * h) affiche la carte 50.
-                // Si on veut faire descendre, on va aller vers l'index 5.
                 const startIndex = 50; 
                 el.style.transition = 'none';
                 el.style.transform = `translateY(-${startIndex * cardH}px)`;
@@ -611,16 +617,24 @@
         function resetAndReplay() {
             // Cacher UI
             document.getElementById('ui-buttons').classList.remove('visible');
+            
+            // Cacher le cadre violet (Fade out)
             const rect = document.getElementById('violet-border');
-            rect.classList.remove('animate-border');
-            rect.style.strokeDashoffset = '3000';
+            rect.classList.remove('visible'); // Lance la transition d'opacité
+            
             hideAdvice();
 
-            // Retirer pop effect
-            document.querySelectorAll('.game-card').forEach(c => c.classList.remove('pop-effect'));
+            // Attendre la fin du fade out (0.5s ou 1s) avant de reset la position
+            setTimeout(() => {
+                rect.classList.remove('animate-border');
+                rect.style.strokeDashoffset = '3000';
+                
+                // Retirer pop effect
+                document.querySelectorAll('.game-card').forEach(c => c.classList.remove('pop-effect'));
 
-            // Lancer
-            launchSlots();
+                // Lancer
+                launchSlots();
+            }, 500);
         }
 
         function launchSlots() {
@@ -635,82 +649,40 @@
             stripsInfo.forEach((info, index) => {
                 const stripEl = document.getElementById(info.id);
                 
-                // 1. LOGIQUE DE CONTINUITÉ (SEAMLESS)
-                // Où sommes-nous visuellement ?
-                // Lors du dernier tour, nous avons atterri sur 'info.lastIdx' (ex: index 5 dans le dataset)
-                // Visuellement, cette carte doit être celle affichée MAINTENANT avant de bouger.
-                
-                // On va "tricher" : on replace instantanément la bande pour que 
-                // la carte gagnante précédente soit tout en BAS de la zone qu'on va parcourir.
-                // Disons qu'on veut parcourir 40 cartes.
-                // On veut finir sur un nouvel index 'winningIndex' (ex: index 2).
-                // On positionne le strip à l'index (40 + lastIdx) (loin en bas, valeur Y très négative)
-                // NON, on veut que les cartes DESCENDENT.
-                // Donc le strip doit aller vers le BAS (Y augmente).
-                // Départ : Y très négatif (on voit le bas du strip). Arrivée : Y moins négatif (on voit le haut).
-                
-                // Définissons la cible (Le nouveau gagnant)
+                // Choix aléatoire
                 const winningIndexRaw = Math.floor(Math.random() * info.data.length);
                 currentDraw[info.type] = info.data[winningIndexRaw];
                 
-                // On sauvegarde pour le prochain tour
                 if (index === 0) lastDrawIndices.strip1 = winningIndexRaw;
                 if (index === 1) lastDrawIndices.strip2 = winningIndexRaw;
                 if (index === 2) lastDrawIndices.strip3 = winningIndexRaw;
 
-                // La cible sera placée en "Haut" de la bande (petit index)
-                // Disons index cible = 5 (pour avoir un peu de marge au dessus)
-                const targetVisualIndex = 5; 
-                // On doit s'assurer que la carte à cet index 5 est bien la winningIndexRaw
-                // Pour cela, on a construit le strip en répétant le dataset.
-                // strip[5] est la carte (5 % length).
-                // Si on veut que strip[5] soit la carte X, il faudrait reconstruire le strip... 
-                // TROP LOURD.
+                // Calcul position arrivée (Haut)
+                const endPosIndex = winningIndexRaw + (1 * info.data.length); 
                 
-                // Méthode simplifiée :
-                // On utilise la répétition naturelle.
-                // On veut finir sur une occurrence de winningIndexRaw qui est "haute" (petit index absolu).
-                // Disons la 1ère occurrence après l'index 3.
-                // Index final = winningIndexRaw + (1 * data.length) ? Non, juste winningIndexRaw.
-                // Si winningIndexRaw est 0, c'est tout en haut.
-                
-                const endPosIndex = winningIndexRaw + (1 * info.data.length); // On vise la 2ème répétition pour être sûr d'avoir du buffer au dessus
-                
-                // Maintenant, le départ. On veut que ça commence sur l'image de la carte précédente.
-                // La carte précédente était 'info.lastIdx'.
-                // Pour créer l'illusion de vitesse et de rotation, on doit partir de BEAUCOUP plus bas (index plus grand).
-                // Départ = endPosIndex + (X tours complets) + décalage pour matcher l'image ?
-                // Non, pour que ce soit seamless, il faut que visuellement :
-                // StartPosition Y affiche la carte 'info.lastIdx'.
-                
-                // Calculons un index de départ qui correspond à 'lastIdx' mais qui est loin (ex: +30 cartes)
+                // Calcul position départ (Bas, illusion seamless)
                 const distance = 30 + Math.floor(Math.random() * 10);
-                // On cherche un index 'startPosIndex' tel que :
-                // startPosIndex > endPosIndex
-                // ET (startPosIndex % data.length) == info.lastIdx
-                
                 let startPosIndex = endPosIndex + distance;
                 const remainder = startPosIndex % info.data.length;
                 const adjustment = remainder - info.lastIdx;
-                startPosIndex -= adjustment; // Calage exact sur le bon type de carte
+                startPosIndex -= adjustment; 
                 
                 const startY = -(startPosIndex * cardH);
                 const endY = -(endPosIndex * cardH);
                 
-                // 1. Reset instantané à la position de départ (qui affiche visuellement la carte précédente)
+                // Reset instantané
                 stripEl.style.transition = 'none';
                 stripEl.style.transform = `translateY(${startY}px)`;
                 
                 // Force Reflow
                 stripEl.offsetHeight;
                 
-                // 2. Animation vers la cible
+                // Animation
                 stripEl.style.transition = `transform ${delays[index] / 1000}s cubic-bezier(0.25, 1, 0.5, 1)`;
                 stripEl.style.transform = `translateY(${endY}px)`;
 
-                // 3. Fin
+                // Fin
                 setTimeout(() => {
-                    // Highlight
                     const finalCard = stripEl.children[endPosIndex];
                     if(finalCard) finalCard.classList.add('pop-effect');
                     
@@ -727,56 +699,39 @@
             rect.setAttribute('width', cardsBox.clientWidth);
             rect.setAttribute('height', cardsBox.clientHeight);
             
-            // Calcul périmètre pour animation
             const perimeter = 2 * (cardsBox.clientWidth + cardsBox.clientHeight);
             rect.style.strokeDasharray = perimeter;
             rect.style.strokeDashoffset = perimeter;
 
-            rect.classList.add('animate-border');
+            // Rendre visible (Opacity) puis lancer l'anim (Dashoffset)
+            rect.classList.add('visible');
+            // Petit délai pour assurer que l'opacité est à 1 avant de tracer
+            setTimeout(() => {
+                rect.classList.add('animate-border');
+            }, 100);
 
             setTimeout(() => {
                 document.getElementById('ui-buttons').classList.add('visible');
-            }, 1000);
+            }, 1500);
         }
 
-        // --- COACH & MUSIQUE (LOGIQUE INTERNE) ---
+        // --- COACH & MUSIQUE ---
 
         function showAdvice() {
             const el = currentDraw.element;
             const ti = currentDraw.tissu;
             const mv = currentDraw.movement;
             
-            // Générateur de phrase "Mad Libs" intelligent
-            const intros = [
-                "Prenez un instant pour visualiser",
-                "Laissez votre corps explorer",
-                "Imaginez la sensation de",
-                "Invitez dans votre danse"
-            ];
-            
-            const verbs = [
-                "qui s'infuse dans",
-                "guidant vos",
-                "transformant vos",
-                "réveillant vos"
-            ];
-            
-            const actions = [
-                "dans un élan de",
-                "à travers la force de",
-                "par le prisme de",
-                "en incarnant"
-            ];
+            const intros = ["Prenez un instant pour visualiser", "Laissez votre corps explorer", "Imaginez la sensation de", "Invitez dans votre danse"];
+            const verbs = ["qui s'infuse dans", "guidant vos", "transformant vos", "réveillant vos"];
+            const actions = ["dans un élan de", "à travers la force de", "par le prisme de", "en incarnant"];
 
-            // Construction
             const p1 = intros[Math.floor(Math.random() * intros.length)];
             const p2 = verbs[Math.floor(Math.random() * verbs.length)];
             const p3 = actions[Math.floor(Math.random() * actions.length)];
 
-            // Logique conditionnelle simple pour enrichir
             let advice = `${p1} <strong>${el.title}</strong> ${p2} <strong>${ti.title}</strong>, ${p3} <strong>${mv.title}</strong>.`;
             
-            // Ajout d'une phrase spécifique basée sur les tags
             let subAdvice = "";
             if (el.tags.includes('feu') && mv.tags.includes('haut')) {
                 subAdvice = "Sentez l'énergie monter comme une flamme indomptable.";
@@ -807,19 +762,15 @@
             const tiTags = currentDraw.tissu.tags;
             const mvTags = currentDraw.movement.tags;
             
-            // Système de scoring simple
             let bestMatch = musicDatabase[0];
             let maxScore = -1;
 
             musicDatabase.forEach(track => {
                 let score = 0;
-                // On check les correspondances de tags
                 const allCurrentTags = [...elTags, ...tiTags, ...mvTags];
                 track.tags.forEach(t => {
                     if (allCurrentTags.includes(t)) score += 2;
                 });
-                
-                // Aléatoire pour varier si scores égaux
                 score += Math.random();
 
                 if (score > maxScore) {
