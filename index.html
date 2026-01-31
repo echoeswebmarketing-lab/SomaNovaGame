@@ -2,9 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All ma Danse - Le Jeu</title>
-    <!-- Importation de polices pour le style Bohème -->
+    <!-- Importation de polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Quicksand:wght@300;400;600&family=WindSong&display=swap" rel="stylesheet">
@@ -14,12 +14,13 @@
             --primary-text: #4a4a4a;
             --accent-violet: #8a2be2;
             --boho-bg: #fdfbf7;
-            --card-bg: #fff;
             --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
             --btn-blue: #3498db;
             --btn-blue-hover: #2980b9;
             --btn-gold: #d4af37;
             --btn-gold-hover: #b4942b;
+            --btn-music: #e74c3c;
+            --btn-music-hover: #c0392b;
         }
 
         body, html {
@@ -27,21 +28,49 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Changed to auto to allow scrolling for AI response */
+            overflow: hidden; /* Empêche le scroll global */
             font-family: 'Quicksand', sans-serif;
             background-color: var(--boho-bg);
             color: var(--primary-text);
         }
 
-        /* Arrière-plan Bohème */
+        /* --- OVERLAY ROTATION (Mobile Portrait) --- */
+        #rotate-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(253, 251, 247, 0.95);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: rotatePhone 2s infinite ease-in-out;
+        }
+
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #rotate-overlay { display: flex; }
+            #app-container { display: none !important; }
+        }
+
+        /* --- ARRIÈRE-PLAN --- */
         .bg-pattern {
-            position: fixed; /* Fixed to cover screen even when scrolling */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            opacity: 0.2;
+            opacity: 0.15;
             background-image: url('https://images.unsplash.com/photo-1542646890-0902c2db5374?q=80&w=2574&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -49,16 +78,16 @@
             filter: sepia(0.5) contrast(0.8);
         }
 
+        /* --- CONTENEUR PRINCIPAL --- */
         #app-container {
             position: relative;
             z-index: 1;
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: 50px;
         }
 
         /* --- ÉCRAN D'ACCUEIL --- */
@@ -67,15 +96,17 @@
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 5rem;
-            width: 80%;
-            height: 80vh; /* Fixed height for intro centering */
+            gap: 5vw;
+            width: 90%;
+            height: 100%;
             transition: opacity 0.8s ease;
         }
 
         .presentation-card {
-            width: 300px;
-            height: 450px;
+            width: 25vh; /* Responsive height unit */
+            height: 37.5vh; /* Ratio 2:3 */
+            max-width: 300px;
+            max-height: 450px;
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -84,46 +115,46 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             border: 1px solid #e0e0e0;
             position: relative;
-            overflow: hidden;
         }
 
         .presentation-card::before {
             content: '';
             position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 2px solid #d4af37; /* Or mat */
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 2px solid #d4af37;
             border-radius: 10px;
             pointer-events: none;
         }
 
         .presentation-title {
             font-family: 'WindSong', cursive;
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 5vh, 3rem);
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 2vh;
         }
 
         .intro-content {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            max-width: 500px;
+            max-width: 50vw;
         }
 
         h1 {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 4vh, 2.5rem);
             margin: 0 0 10px 0;
             color: #2c3e50;
+            line-height: 1.2;
         }
 
         h2 {
             font-weight: 300;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
+            font-size: clamp(1rem, 2vh, 1.2rem);
+            margin-bottom: 3vh;
             font-style: italic;
         }
 
@@ -131,20 +162,18 @@
             background-color: var(--btn-blue);
             color: white;
             border: none;
-            padding: 15px 50px;
-            font-size: 1.5rem;
+            padding: 1.5vh 4vw;
+            font-size: clamp(1rem, 3vh, 1.5rem);
             font-family: 'Cinzel Decorative', cursive;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, background-color 0.3s;
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-            letter-spacing: 2px;
         }
 
         .btn-go:hover {
             background-color: var(--btn-blue-hover);
             transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
         }
 
         /* --- ÉCRAN DE JEU --- */
@@ -152,10 +181,9 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Changed to flex-start to allow growing content */
+            justify-content: center;
             width: 100%;
-            min-height: 100vh;
-            padding-top: 5vh;
+            height: 100%;
             position: relative;
             opacity: 0;
             transition: opacity 0.8s ease;
@@ -163,18 +191,23 @@
 
         .cards-container {
             display: flex;
-            gap: 30px;
+            gap: 2vw;
             perspective: 1000px;
             position: relative;
-            padding: 40px;
+            padding: 2vh;
+            height: 55vh; /* Zone des cartes définie par la hauteur de l'écran */
+            align-items: center;
         }
 
+        /* Les Slots */
         .slot-machine {
-            width: 280px;
-            height: 420px;
+            width: 28vh; /* Proportionnel à la hauteur */
+            height: 42vh; /* Ratio 2:3 */
+            max-width: 280px;
+            max-height: 420px;
             overflow: hidden;
             background: rgba(255,255,255,0.5);
-            border-radius: 15px;
+            border-radius: 12px;
             position: relative;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
             border: 1px solid rgba(0,0,0,0.1);
@@ -183,151 +216,93 @@
         .slot-strip {
             display: flex;
             flex-direction: column;
-            transition: transform 0.1s linear;
+            /* Pas de transition par défaut, géré en JS */
             will-change: transform;
         }
 
+        /* Design Carte Responsive */
         .game-card {
-            width: 280px;
-            height: 420px;
+            width: 100%;
+            height: 42vh; /* Match slot container */
+            max-height: 420px;
             flex-shrink: 0;
             background: white;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 20px;
+            padding: 2vh 1vh;
             box-sizing: border-box;
             border: 1px solid #eee;
             position: relative;
         }
 
         .card-category {
-            font-size: 0.9rem;
+            font-size: clamp(0.6rem, 1.5vh, 0.9rem);
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #888;
-            margin-bottom: 10px;
+            margin-bottom: 0.5vh;
         }
 
         .card-main-text {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: 1.8rem;
+            font-size: clamp(1rem, 2.5vh, 1.6rem);
             text-align: center;
             color: #333;
-            margin: 10px 0;
-            line-height: 1.3;
+            margin: 1vh 0;
+            line-height: 1.2;
         }
 
         .card-sub-text {
             font-style: italic;
             text-align: center;
             color: #666;
-            font-size: 1rem;
-        }
-
-        .card-number {
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 0.8rem;
-            color: #aaa;
+            font-size: clamp(0.7rem, 1.8vh, 1rem);
         }
 
         .card-decoration {
-            width: 60px;
-            height: 60px;
+            width: 6vh;
+            height: 6vh;
             border-radius: 50%;
             background: #fdfbf7;
             border: 1px dashed #d4af37;
-            margin: 10px 0;
+            margin: 1vh 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: clamp(1.5rem, 3vh, 2rem);
             color: #d4af37;
         }
 
-        @keyframes popCard {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); box-shadow: 0 15px 30px rgba(138, 43, 226, 0.2); z-index: 10; border-color: var(--accent-violet); }
-            100% { transform: scale(1); }
-        }
-
-        .pop-effect {
-            animation: popCard 0.6s ease-out forwards;
-        }
-
-        .border-animation-container {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .border-rect {
-            fill: none;
-            stroke: var(--accent-violet);
-            stroke-width: 4;
-            stroke-dasharray: 2400;
-            stroke-dashoffset: 2400;
-            rx: 20;
-        }
-
-        .animate-border {
-            animation: drawBorder 2s ease-out forwards;
-        }
-
-        @keyframes drawBorder {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* --- UI FINALE & AI --- */
+        /* UI Bas de page */
         .final-ui-container {
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: center; /* Centered */
-            gap: 20px; /* Space between buttons */
-            width: 900px;
-            margin-top: 30px;
-            min-height: 60px;
-            flex-wrap: wrap;
-        }
-
-        .final-text {
-            font-family: 'WindSong', cursive;
-            font-size: 2.5rem;
-            color: var(--accent-violet);
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: all 1.5s ease;
+            justify-content: center;
+            gap: 15px;
             width: 100%;
-            text-align: center;
-            margin-bottom: 10px;
+            height: 10vh;
+            margin-top: 1vh;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
-
-        .final-text.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        
+        .final-ui-container.visible { opacity: 1; }
 
         .btn-action {
-            padding: 10px 25px;
+            padding: 1vh 2vw;
             border-radius: 30px;
             cursor: pointer;
             font-family: 'Quicksand', sans-serif;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2vh, 1rem);
             transition: all 0.3s;
-            opacity: 0;
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .btn-action.show {
-            opacity: 1;
+            white-space: nowrap;
         }
 
         .btn-replay {
@@ -335,11 +310,7 @@
             border: 2px solid #aaa;
             color: #888;
         }
-
-        .btn-replay:hover {
-            border-color: var(--btn-blue);
-            color: var(--btn-blue);
-        }
+        .btn-replay:hover { border-color: var(--btn-blue); color: var(--btn-blue); }
 
         .btn-ai {
             background: linear-gradient(45deg, var(--btn-gold), #f1c40f);
@@ -347,87 +318,87 @@
             color: white;
             box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
         }
+        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6); }
 
-        .btn-ai:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6);
-            background: linear-gradient(45deg, #b4942b, #f39c12);
+        .btn-music {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.4);
         }
-        
-        .btn-ai:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .btn-music:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(192, 57, 43, 0.6); }
 
-        /* --- AI RESPONSE BOX --- */
-        #ai-result-container {
-            width: 80%;
-            max-width: 800px;
-            margin-top: 30px;
-            margin-bottom: 50px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-            position: relative;
-            display: none; /* Hidden by default */
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-
-        #ai-result-container.visible {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #ai-result-container::before {
-            content: '✨ Le Conseil du Coach';
-            position: absolute;
-            top: -15px;
+        /* Pop-up Conseil */
+        #advice-overlay {
+            position: fixed;
+            bottom: 2vh;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(100px);
+            width: 60%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        #advice-overlay.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        #advice-overlay::before {
+            content: '✨ Conseil du Coach';
+            position: absolute;
+            top: -12px; left: 50%; transform: translateX(-50%);
             background: var(--accent-violet);
             color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-family: 'Quicksand', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 2px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
         }
 
-        .ai-text {
-            font-family: 'Quicksand', sans-serif;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #555;
-            text-align: center;
-            white-space: pre-wrap;
-        }
+        .advice-text { font-size: 1rem; line-height: 1.5; text-align: center; color: #555; }
+        .close-advice { position: absolute; top: 5px; right: 10px; cursor: pointer; color: #aaa; font-size: 1.2rem; }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        /* Animation cadre violet */
+        .border-animation-container {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 100;
         }
+        .border-rect {
+            fill: none; stroke: var(--accent-violet); stroke-width: 4;
+            stroke-dasharray: 3000; stroke-dashoffset: 3000; rx: 20;
+        }
+        .animate-border { animation: drawBorder 2s ease-out forwards; }
+        @keyframes drawBorder { to { stroke-dashoffset: 0; } }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Animation Pop */
+        .pop-effect { animation: popCard 0.6s ease-out forwards; }
+        @keyframes popCard {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); border-color: var(--accent-violet); box-shadow: 0 0 15px rgba(138,43,226,0.3); }
+            100% { transform: scale(1); }
         }
 
     </style>
 </head>
 <body>
 
-    <!-- Fond Bohème -->
+    <!-- Overlay Rotation pour Mobile -->
+    <div id="rotate-overlay">
+        <div class="rotate-icon">📱</div>
+        <h2>Pour une meilleure expérience</h2>
+        <p>Veuillez tourner votre appareil à l'horizontale</p>
+    </div>
+
+    <!-- Fond -->
     <div class="bg-pattern"></div>
 
     <div id="app-container">
@@ -437,7 +408,7 @@
             <div class="presentation-card">
                 <div class="card-decoration">✨</div>
                 <div class="presentation-title">All ma Danse</div>
-                <p style="font-style: italic; margin-top: 2rem;">Le Jeu de Cartes</p>
+                <p style="font-style: italic; margin-top: auto; margin-bottom: 2vh;">Le Jeu de Cartes</p>
             </div>
             
             <div class="intro-content">
@@ -451,46 +422,36 @@
         <div id="game-screen">
             
             <div class="cards-container" id="cards-box">
-                <!-- SVG pour l'animation du cadre -->
                 <svg class="border-animation-container" width="100%" height="100%" style="overflow: visible;">
-                    <rect id="violet-border" x="-10" y="-10" width="100%" height="100%" class="border-rect" />
+                    <rect id="violet-border" x="0" y="0" width="100%" height="100%" class="border-rect" />
                 </svg>
 
-                <!-- SLOT 1 : ÉLÉMENTS -->
-                <div class="slot-machine" id="slot-1">
-                    <div class="slot-strip" id="strip-1">
-                        <!-- JS injectera les cartes ici -->
-                    </div>
-                </div>
-
-                <!-- SLOT 2 : TISSUS -->
-                <div class="slot-machine" id="slot-2">
-                    <div class="slot-strip" id="strip-2">
-                        <!-- JS injectera les cartes ici -->
-                    </div>
-                </div>
-
-                <!-- SLOT 3 : MOUVEMENTS -->
-                <div class="slot-machine" id="slot-3">
-                    <div class="slot-strip" id="strip-3">
-                        <!-- JS injectera les cartes ici -->
-                    </div>
-                </div>
+                <!-- SLOTS -->
+                <div class="slot-machine" id="slot-1"><div class="slot-strip" id="strip-1"></div></div>
+                <div class="slot-machine" id="slot-2"><div class="slot-strip" id="strip-2"></div></div>
+                <div class="slot-machine" id="slot-3"><div class="slot-strip" id="strip-3"></div></div>
             </div>
 
-            <div class="final-ui-container">
-                <div class="final-text" id="final-msg">A vous de jouer !!!</div>
-                <button class="btn-action btn-ai" id="ai-btn" onclick="generateInspiration()">
-                    <span>Inspirer ma Danse ✨</span>
+            <div class="final-ui-container" id="ui-buttons">
+                <div style="font-family: 'WindSong'; font-size: 1.5rem; color: var(--accent-violet); margin-right: 10px;">A vous de jouer !</div>
+                
+                <button class="btn-action btn-ai" onclick="showAdvice()">
+                    <span>Conseil du Coach ✨</span>
                 </button>
-                <button class="btn-action btn-replay" id="replay-btn" onclick="resetGame()">
+                
+                <button class="btn-action btn-music" onclick="openMusic()">
+                    <span>Une musique ? 🎵</span>
+                </button>
+                
+                <button class="btn-action btn-replay" onclick="resetAndReplay()">
                     Recommencer ↻
                 </button>
             </div>
 
-            <!-- AI RESULT AREA -->
-            <div id="ai-result-container">
-                <div id="ai-content" class="ai-text"></div>
+            <!-- BOITE DE CONSEIL -->
+            <div id="advice-overlay">
+                <div class="close-advice" onclick="hideAdvice()">×</div>
+                <div class="advice-text" id="advice-content"></div>
             </div>
 
         </div>
@@ -498,80 +459,93 @@
     </div>
 
     <script>
-        // API KEY Variable
-        const apiKey = ""; // La clé API sera injectée par l'environnement
-
-        // --- DONNÉES EXTRAITES DU PDF ---
+        // --- DONNÉES ---
+        // Ajout de tags pour la logique "système expert"
         const dataElements = [
-            { title: "ARGILE", desc: "absorbe", cat: "Terre", icon: "🏺" },
-            { title: "SABLE", desc: "coule - roule - bâti", cat: "Terre", icon: "🏖️" },
-            { title: "ROCHE SOLIDE", desc: "socle - dure - contient", cat: "Terre", icon: "🪨" },
-            { title: "ROCHE FRIABLE", desc: "fragile - sculpte - érode", cat: "Terre", icon: "🧱" },
-            { title: "NEIGE", desc: "matière - froid - cristallin", cat: "Eau", icon: "❄️" },
-            { title: "GLACE", desc: "transparent - froid - solide", cat: "Eau", icon: "🧊" },
-            { title: "RIVIÈRE", desc: "coule - vivant - serpente", cat: "Eau", icon: "🌊" },
-            { title: "CASCADE", desc: "tonitruant - jaillissant - sonore", cat: "Eau", icon: "⛲" },
-            { title: "GOUTTE", desc: "petite part - tout - reflet", cat: "Eau", icon: "💧" },
-            { title: "MER & OCÉAN", desc: "vagues – immense - Terre", cat: "Eau", icon: "🐋" },
-            { title: "NUAGE", desc: "vole – forme - ciel", cat: "Eau / Air", icon: "☁️" },
-            { title: "CYCLONE", desc: "spirale – danse - révolution", cat: "Air", icon: "🌀" },
-            { title: "BRISE", desc: "frais – doux - apaisant", cat: "Air", icon: "🍃" },
-            { title: "VENT FORT", desc: "déplace – courant - température", cat: "Air", icon: "💨" },
-            { title: "MURMURE", desc: "délicat – à l'oreille - inspirant", cat: "Air", icon: "🗣️" },
-            { title: "BOUGIE", desc: "éclaire – guide - présence", cat: "Feu", icon: "🕯️" },
-            { title: "FOYER", desc: "famille – cœur - réchauffe", cat: "Feu", icon: "🔥" },
-            { title: "PHOENIX", desc: "mort – ressuscite - transfiguration", cat: "Feu", icon: "🦅" },
-            { title: "VOLCAN", desc: "île – éclat - tremblement", cat: "Feu / Terre", icon: "🌋" },
-            { title: "TONNERRE", desc: "bruit – brûle - zèbre", cat: "Feu / Air", icon: "⚡" },
-            { title: "MÉDITATION", desc: "organique – intérieur - place", cat: "Espace", icon: "🧘" },
-            { title: "ÉNERGIE CHAKRAS", desc: "réseau – connexion - informer", cat: "Espace", icon: "☸️" },
-            { title: "COSMOS", desc: "infini – étendu - étoiles", cat: "Espace", icon: "🌌" },
-            { title: "ENTRE DEUX CORPS", desc: "dialogue – formes - correspondance", cat: "Espace", icon: "👥" }
+            { title: "ARGILE", desc: "absorbe", cat: "Terre", icon: "🏺", tags: ["terre", "lourd", "lent"] },
+            { title: "SABLE", desc: "coule - roule - bâti", cat: "Terre", icon: "🏖️", tags: ["terre", "fluide", "granuleux"] },
+            { title: "ROCHE SOLIDE", desc: "socle - dure - contient", cat: "Terre", icon: "🪨", tags: ["terre", "statique", "fort"] },
+            { title: "ROCHE FRIABLE", desc: "fragile - sculpte - érode", cat: "Terre", icon: "🧱", tags: ["terre", "fragile", "transformation"] },
+            { title: "NEIGE", desc: "matière - froid - cristallin", cat: "Eau", icon: "❄️", tags: ["eau", "silence", "doux"] },
+            { title: "GLACE", desc: "transparent - froid - solide", cat: "Eau", icon: "🧊", tags: ["eau", "rigide", "tranchant"] },
+            { title: "RIVIÈRE", desc: "coule - vivant - serpente", cat: "Eau", icon: "🌊", tags: ["eau", "continu", "voyage"] },
+            { title: "CASCADE", desc: "tonitruant - jaillissant - sonore", cat: "Eau", icon: "⛲", tags: ["eau", "puissant", "vertical"] },
+            { title: "GOUTTE", desc: "petite part - tout - reflet", cat: "Eau", icon: "💧", tags: ["eau", "subtil", "détail"] },
+            { title: "MER & OCÉAN", desc: "vagues – immense - Terre", cat: "Eau", icon: "🐋", tags: ["eau", "immense", "respiration"] },
+            { title: "NUAGE", desc: "vole – forme - ciel", cat: "Eau / Air", icon: "☁️", tags: ["air", "léger", "flottant"] },
+            { title: "CYCLONE", desc: "spirale – danse - révolution", cat: "Air", icon: "🌀", tags: ["air", "tourbillon", "chaos"] },
+            { title: "BRISE", desc: "frais – doux - apaisant", cat: "Air", icon: "🍃", tags: ["air", "caresse", "calme"] },
+            { title: "VENT FORT", desc: "déplace – courant - température", cat: "Air", icon: "💨", tags: ["air", "poussée", "direction"] },
+            { title: "MURMURE", desc: "délicat – à l'oreille - inspirant", cat: "Air", icon: "🗣️", tags: ["air", "secret", "intime"] },
+            { title: "BOUGIE", desc: "éclaire – guide - présence", cat: "Feu", icon: "🕯️", tags: ["feu", "focus", "sacré"] },
+            { title: "FOYER", desc: "famille – cœur - réchauffe", cat: "Feu", icon: "🔥", tags: ["feu", "centre", "chaleur"] },
+            { title: "PHOENIX", desc: "mort – ressuscite - transfiguration", cat: "Feu", icon: "🦅", tags: ["feu", "renaissance", "explosion"] },
+            { title: "VOLCAN", desc: "île – éclat - tremblement", cat: "Feu / Terre", icon: "🌋", tags: ["feu", "terre", "éruption"] },
+            { title: "TONNERRE", desc: "bruit – brûle - zèbre", cat: "Feu / Air", icon: "⚡", tags: ["feu", "air", "impact"] },
+            { title: "MÉDITATION", desc: "organique – intérieur - place", cat: "Espace", icon: "🧘", tags: ["espace", "immobile", "intérieur"] },
+            { title: "ÉNERGIE CHAKRAS", desc: "réseau – connexion - informer", cat: "Espace", icon: "☸️", tags: ["espace", "alignement", "vibration"] },
+            { title: "COSMOS", desc: "infini – étendu - étoiles", cat: "Espace", icon: "🌌", tags: ["espace", "vaste", "inconnu"] },
+            { title: "ENTRE DEUX CORPS", desc: "dialogue – formes - correspondance", cat: "Espace", icon: "👥", tags: ["espace", "relation", "aimant"] }
         ];
 
         const dataTissus = [
-            { title: "OS", desc: "support – structure - permanence", cat: "Tissus", icon: "🦴" },
-            { title: "ARTICULATIONS", desc: "mouvement – plier - rotation", cat: "Tissus", icon: "🔩" },
-            { title: "MUSCLES", desc: "contracter – étirer - expandre", cat: "Tissus", icon: "💪" },
-            { title: "LIGAMENTS & TENDONS", desc: "lier - tenir - élastique", cat: "Tissus", icon: "🔗" },
-            { title: "FASCIAS", desc: "réseau – omniprésence - coulisse", cat: "Tissus", icon: "🕸️" },
-            { title: "LIQUIDES", desc: "sang, eaux, lymphe - échange", cat: "Tissus", icon: "🩸" },
-            { title: "ORGANES", desc: "fonction – poids - consistance", cat: "Tissus", icon: "🫀" },
-            { title: "PEAU", desc: "couvre – protège - contient", cat: "Tissus", icon: "✋" },
-            { title: "HORMONES", desc: "véhicule – régule - émotions", cat: "Tissus", icon: "💊" },
-            { title: "CELLULE", desc: "unité – relais - frémis", cat: "Tissus", icon: "🦠" },
-            { title: "NEURONES", desc: "informe – relie - impulse", cat: "Tissus", icon: "🧠" },
-            { title: "NERFS", desc: "transmettre - sensibiliser - commander", cat: "Tissus", icon: "⚡" }
+            { title: "OS", desc: "support – structure", cat: "Tissus", icon: "🦴", tags: ["structure", "dur"] },
+            { title: "ARTICULATIONS", desc: "plier - rotation", cat: "Tissus", icon: "🔩", tags: ["mécanique", "charnière"] },
+            { title: "MUSCLES", desc: "contracter – étirer", cat: "Tissus", icon: "💪", tags: ["force", "action"] },
+            { title: "LIGAMENTS", desc: "lier - tenir - élastique", cat: "Tissus", icon: "🔗", tags: ["lien", "tension"] },
+            { title: "FASCIAS", desc: "réseau – omniprésence", cat: "Tissus", icon: "🕸️", tags: ["global", "connectif"] },
+            { title: "LIQUIDES", desc: "sang, eaux, lymphe", cat: "Tissus", icon: "🩸", tags: ["flux", "interne"] },
+            { title: "ORGANES", desc: "fonction – poids", cat: "Tissus", icon: "🫀", tags: ["organique", "profond"] },
+            { title: "PEAU", desc: "couvre – protège", cat: "Tissus", icon: "✋", tags: ["surface", "sensible"] },
+            { title: "HORMONES", desc: "véhicule – émotions", cat: "Tissus", icon: "💊", tags: ["chimie", "humeur"] },
+            { title: "CELLULE", desc: "unité – frémis", cat: "Tissus", icon: "🦠", tags: ["micro", "vibration"] },
+            { title: "NEURONES", desc: "informe – impulse", cat: "Tissus", icon: "🧠", tags: ["électrique", "rapide"] },
+            { title: "NERFS", desc: "transmettre - commander", cat: "Tissus", icon: "⚡", tags: ["ligne", "signal"] }
         ];
 
         const dataMouvements = [
-            { title: "GRAVITÉ", desc: "chute – poids - relâchement", cat: "Mouvement", icon: "⬇️" },
-            { title: "ÉRECTION", desc: "opposer – redresser - lever", cat: "Mouvement", icon: "⬆️" },
-            { title: "SYNERGIE", desc: "continuer – tourner - toupie", cat: "Mouvement", icon: "🎡" },
-            { title: "MOMENTUM", desc: "étendre – inscrire - spirale", cat: "Mouvement", icon: "🐌" },
-            { title: "IMMOBILISATION", desc: "freiner - stopper - préciser", cat: "Mouvement", icon: "🛑" },
-            { title: "IDENTIFICATION", desc: "plonger - focusser - déterminer", cat: "Mouvement", icon: "🎯" },
-            { title: "AMPLIFICATION", desc: "augmenter - agrandir - accroitre", cat: "Mouvement", icon: "🔊" },
-            { title: "LAISSER ALLER", desc: "suivre - amuser - simplifier", cat: "Mouvement", icon: "🎈" },
-            { title: "TRANSFORMATION", desc: "orienter - changer - créer", cat: "Mouvement", icon: "🦋" },
-            { title: "IMPULSER", desc: "informer – toucher - produire", cat: "Mvt à 2", icon: "🤜" },
-            { title: "SOUTENIR", desc: "appuyer – recevoir - présence", cat: "Mvt à 2", icon: "🤲" },
-            { title: "PORTER", desc: "élever – permettre - collaborer", cat: "Mvt à 2", icon: "🏗️" },
-            { title: "POUSSER", desc: "inviter - entrer - souffler", cat: "Mvt à 2", icon: "🌬️" },
-            { title: "REFLÉTER", desc: "miroir – reproduire - servir", cat: "Mvt à 2", icon: "🪞" },
-            { title: "PRESSER", desc: "compression – ressentir - concentrer", cat: "Mvt à 2", icon: "🤏" },
-            { title: "ÉTIRER", desc: "possibles – fibres - espace", cat: "Mvt à 2", icon: "🤸" },
-            { title: "EFFLEURER", desc: "sensibiliser - orienter - éveiller", cat: "Mvt à 2", icon: "🪶" },
-            { title: "ÊTRE AVEC", desc: "écouter - harmoniser - accueillir", cat: "Mvt à 2", icon: "🤝" }
+            { title: "GRAVITÉ", desc: "chute – poids", cat: "Mouvement", icon: "⬇️", tags: ["bas", "lacher"] },
+            { title: "ÉRECTION", desc: "opposer – redresser", cat: "Mouvement", icon: "⬆️", tags: ["haut", "grandir"] },
+            { title: "SYNERGIE", desc: "continuer – tourner", cat: "Mouvement", icon: "🎡", tags: ["cycle", "ensemble"] },
+            { title: "MOMENTUM", desc: "étendre – spirale", cat: "Mouvement", icon: "🐌", tags: ["élan", "courbe"] },
+            { title: "IMMOBILISATION", desc: "freiner - stopper", cat: "Mouvement", icon: "🛑", tags: ["stop", "pause"] },
+            { title: "IDENTIFICATION", desc: "plonger - focusser", cat: "Mouvement", icon: "🎯", tags: ["précis", "regard"] },
+            { title: "AMPLIFICATION", desc: "augmenter - agrandir", cat: "Mouvement", icon: "🔊", tags: ["grand", "volume"] },
+            { title: "LAISSER ALLER", desc: "suivre - amuser", cat: "Mouvement", icon: "🎈", tags: ["jeu", "libre"] },
+            { title: "TRANSFORMATION", desc: "orienter - changer", cat: "Mouvement", icon: "🦋", tags: ["métamorphose", "autre"] },
+            { title: "IMPULSER", desc: "informer – toucher", cat: "Mvt à 2", icon: "🤜", tags: ["contact", "donner"] },
+            { title: "SOUTENIR", desc: "appuyer – recevoir", cat: "Mvt à 2", icon: "🤲", tags: ["support", "accueil"] },
+            { title: "PORTER", desc: "élever – permettre", cat: "Mvt à 2", icon: "🏗️", tags: ["poids", "soulever"] },
+            { title: "POUSSER", desc: "inviter - entrer", cat: "Mvt à 2", icon: "🌬️", tags: ["pression", "déplacer"] },
+            { title: "REFLÉTER", desc: "miroir – reproduire", cat: "Mvt à 2", icon: "🪞", tags: ["écho", "copie"] },
+            { title: "PRESSER", desc: "compression – concentrer", cat: "Mvt à 2", icon: "🤏", tags: ["serrer", "intensifier"] },
+            { title: "ÉTIRER", desc: "possibles – fibres", cat: "Mvt à 2", icon: "🤸", tags: ["loin", "extension"] },
+            { title: "EFFLEURER", desc: "sensibiliser - éveiller", cat: "Mvt à 2", icon: "🪶", tags: ["peau", "doux"] },
+            { title: "ÊTRE AVEC", desc: "écouter - harmoniser", cat: "Mvt à 2", icon: "🤝", tags: ["présence", "uni"] }
         ];
 
-        const cardHeight = 420;
+        // --- PLAYLIST MUSICALE (Youtube) ---
+        const musicDatabase = [
+            { id: "sitar", url: "https://www.youtube.com/watch?v=8CinhqTb32I", tags: ["espace", "vibration", "subtil", "micro"] }, // Sitar meditative
+            { id: "glass", url: "https://www.youtube.com/watch?v=6Stu7h7Qup8", tags: ["structure", "os", "repetitif", "glace", "cristallin"] }, // Philip Glass
+            { id: "kodo", url: "https://www.youtube.com/watch?v=C7HL5wYqAbU", tags: ["feu", "muscle", "puissant", "impact", "volcan", "terre"] }, // Kodo Drums
+            { id: "ambient", url: "https://www.youtube.com/watch?v=il4VDf-UgHs", tags: ["eau", "fluide", "calme", "lacher", "douceur"] }, // Water ambience
+            { id: "maxrichter", url: "https://www.youtube.com/watch?v=rVN1B-tUpgs", tags: ["triste", "émotion", "fascias", "lien", "memoire"] }, // Max Richter
+            { id: "experimental", url: "https://www.youtube.com/watch?v=y2d5O3a-uN8", tags: ["air", "bizarre", "nerfs", "électrique", "chaos"] }, // Experimental
+            { id: "cello", url: "https://www.youtube.com/watch?v=nQ798THmrpU", tags: ["corps", "profond", "organique", "gravité"] }, // Cello
+            { id: "piano", url: "https://www.youtube.com/watch?v=HuYlJt_R1AQ", tags: ["neige", "léger", "froid", "mental", "neurones"] } // Nils Frahm style
+        ];
+
+        // --- VARIABLES GLOBALES ---
         let currentDraw = { element: null, tissu: null, movement: null };
+        let lastDrawIndices = { strip1: 0, strip2: 0, strip3: 0 }; // Indices des cartes gagnantes précédentes
+        const stripHeight = 60; // Nombre de cartes dans la bande (pour l'illusion infinie)
+        
+        // --- LOGIQUE D'AFFICHAGE ---
 
         function createCardHTML(data, index) {
             return `
-                <div class="game-card">
-                    <div class="card-number">#${index + 1}</div>
+                <div class="game-card" data-index="${index}">
                     <div class="card-decoration">${data.icon}</div>
                     <div>
                         <div class="card-category">${data.cat}</div>
@@ -582,101 +556,165 @@
             `;
         }
 
-        function initStrip(stripId, dataSource) {
-            const strip = document.getElementById(stripId);
-            strip.innerHTML = "";
-            let htmlContent = "";
-            for (let i = 0; i < 40; i++) {
-                dataSource.forEach((item, idx) => {
-                    htmlContent += createCardHTML(item, idx);
-                });
+        function buildStripHTML(dataSource) {
+            let html = "";
+            // On construit une bande géante de 60 cartes en répétant le dataset
+            for (let i = 0; i < stripHeight; i++) {
+                // Pour avoir une variété, on boucle sur les données
+                const dataIndex = i % dataSource.length;
+                html += createCardHTML(dataSource[dataIndex], dataIndex);
             }
-            strip.innerHTML = htmlContent;
+            return html;
         }
+
+        // --- MOTEUR DU JEU ---
 
         function startGame() {
             document.getElementById('intro-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('intro-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
+                
+                // Initialisation du contenu des bandes
+                document.getElementById('strip-1').innerHTML = buildStripHTML(dataElements);
+                document.getElementById('strip-2').innerHTML = buildStripHTML(dataTissus);
+                document.getElementById('strip-3').innerHTML = buildStripHTML(dataMouvements);
+
                 setTimeout(() => {
                     document.getElementById('game-screen').style.opacity = '1';
+                    // Premier lancement : on démarre du bas vers le haut (pour simuler la chute)
+                    // On positionne initialement les bandes tout en bas pour qu'elles remontent vers 0 (chute visuelle)
+                    initializePositions();
                     launchSlots();
                 }, 100);
             }, 800);
         }
 
-        function resetGame() {
-            // Reset UI
+        // Fonction pour positionner les bandes avant le lancer
+        // Pour l'effet "chute" (cartes descendent), le strip doit bouger vers le BAS (translateY augmente)
+        // Donc on part d'une valeur négative (haut caché) vers une valeur proche de 0 (haut visible)
+        function initializePositions() {
+            const cardH = document.querySelector('.game-card').offsetHeight;
+            const strips = ['strip-1', 'strip-2', 'strip-3'];
+            
+            strips.forEach(id => {
+                const el = document.getElementById(id);
+                // On commence à un endroit aléatoire "haut" dans la bande (ex: index 50)
+                // Rappel : translateY(-50 * h) affiche la carte 50.
+                // Si on veut faire descendre, on va aller vers l'index 5.
+                const startIndex = 50; 
+                el.style.transition = 'none';
+                el.style.transform = `translateY(-${startIndex * cardH}px)`;
+            });
+        }
+
+        function resetAndReplay() {
+            // Cacher UI
+            document.getElementById('ui-buttons').classList.remove('visible');
             const rect = document.getElementById('violet-border');
             rect.classList.remove('animate-border');
-            rect.style.strokeDashoffset = '2400';
-            
-            document.getElementById('final-msg').classList.remove('show');
-            document.getElementById('replay-btn').classList.remove('show');
-            document.getElementById('ai-btn').classList.remove('show');
-            
-            // Reset AI box
-            const aiBox = document.getElementById('ai-result-container');
-            aiBox.classList.remove('visible');
-            document.getElementById('ai-content').innerHTML = '';
-            document.getElementById('ai-btn').disabled = false;
-            const btnSpan = document.getElementById('ai-btn').querySelector('span');
-            if(btnSpan) btnSpan.innerText = "Inspirer ma Danse ✨";
+            rect.style.strokeDashoffset = '3000';
+            hideAdvice();
 
-            // Reset Slots
-            document.querySelectorAll('.slot-strip').forEach(el => {
-                el.style.transition = 'none';
-                el.style.transform = 'translateY(0)';
-                el.querySelectorAll('.game-card').forEach(c => c.classList.remove('pop-effect'));
-            });
+            // Retirer pop effect
+            document.querySelectorAll('.game-card').forEach(c => c.classList.remove('pop-effect'));
 
-            // Relancer
-            setTimeout(launchSlots, 100);
+            // Lancer
+            launchSlots();
         }
 
         function launchSlots() {
-            initStrip('strip-1', dataElements);
-            initStrip('strip-2', dataTissus);
-            initStrip('strip-3', dataMouvements);
-
+            const cardH = document.querySelector('.game-card').offsetHeight;
             const delays = [3000, 5000, 8000];
-            const strips = [
-                { id: 'strip-1', data: dataElements, type: 'element' },
-                { id: 'strip-2', data: dataTissus, type: 'tissu' },
-                { id: 'strip-3', data: dataMouvements, type: 'movement' }
+            const stripsInfo = [
+                { id: 'strip-1', data: dataElements, type: 'element', lastIdx: lastDrawIndices.strip1 },
+                { id: 'strip-2', data: dataTissus, type: 'tissu', lastIdx: lastDrawIndices.strip2 },
+                { id: 'strip-3', data: dataMouvements, type: 'movement', lastIdx: lastDrawIndices.strip3 }
             ];
 
-            // Reset current draw
-            currentDraw = { element: null, tissu: null, movement: null };
-
-            strips.forEach((stripObj, index) => {
-                const stripEl = document.getElementById(stripObj.id);
+            stripsInfo.forEach((info, index) => {
+                const stripEl = document.getElementById(info.id);
                 
-                const winningIndex = Math.floor(Math.random() * stripObj.data.length);
+                // 1. LOGIQUE DE CONTINUITÉ (SEAMLESS)
+                // Où sommes-nous visuellement ?
+                // Lors du dernier tour, nous avons atterri sur 'info.lastIdx' (ex: index 5 dans le dataset)
+                // Visuellement, cette carte doit être celle affichée MAINTENANT avant de bouger.
                 
-                // Save winning card data
-                currentDraw[stripObj.type] = stripObj.data[winningIndex];
-
-                const targetRound = 30; 
-                const targetPositionIndex = (targetRound * stripObj.data.length) + winningIndex;
-                const translateY = -(targetPositionIndex * cardHeight);
-
-                stripEl.offsetHeight; 
+                // On va "tricher" : on replace instantanément la bande pour que 
+                // la carte gagnante précédente soit tout en BAS de la zone qu'on va parcourir.
+                // Disons qu'on veut parcourir 40 cartes.
+                // On veut finir sur un nouvel index 'winningIndex' (ex: index 2).
+                // On positionne le strip à l'index (40 + lastIdx) (loin en bas, valeur Y très négative)
+                // NON, on veut que les cartes DESCENDENT.
+                // Donc le strip doit aller vers le BAS (Y augmente).
+                // Départ : Y très négatif (on voit le bas du strip). Arrivée : Y moins négatif (on voit le haut).
                 
-                stripEl.style.transition = `transform ${delays[index] / 1000}s cubic-bezier(0.1, 0.9, 0.2, 1)`;
-                stripEl.style.transform = `translateY(${translateY}px)`;
+                // Définissons la cible (Le nouveau gagnant)
+                const winningIndexRaw = Math.floor(Math.random() * info.data.length);
+                currentDraw[info.type] = info.data[winningIndexRaw];
+                
+                // On sauvegarde pour le prochain tour
+                if (index === 0) lastDrawIndices.strip1 = winningIndexRaw;
+                if (index === 1) lastDrawIndices.strip2 = winningIndexRaw;
+                if (index === 2) lastDrawIndices.strip3 = winningIndexRaw;
 
+                // La cible sera placée en "Haut" de la bande (petit index)
+                // Disons index cible = 5 (pour avoir un peu de marge au dessus)
+                const targetVisualIndex = 5; 
+                // On doit s'assurer que la carte à cet index 5 est bien la winningIndexRaw
+                // Pour cela, on a construit le strip en répétant le dataset.
+                // strip[5] est la carte (5 % length).
+                // Si on veut que strip[5] soit la carte X, il faudrait reconstruire le strip... 
+                // TROP LOURD.
+                
+                // Méthode simplifiée :
+                // On utilise la répétition naturelle.
+                // On veut finir sur une occurrence de winningIndexRaw qui est "haute" (petit index absolu).
+                // Disons la 1ère occurrence après l'index 3.
+                // Index final = winningIndexRaw + (1 * data.length) ? Non, juste winningIndexRaw.
+                // Si winningIndexRaw est 0, c'est tout en haut.
+                
+                const endPosIndex = winningIndexRaw + (1 * info.data.length); // On vise la 2ème répétition pour être sûr d'avoir du buffer au dessus
+                
+                // Maintenant, le départ. On veut que ça commence sur l'image de la carte précédente.
+                // La carte précédente était 'info.lastIdx'.
+                // Pour créer l'illusion de vitesse et de rotation, on doit partir de BEAUCOUP plus bas (index plus grand).
+                // Départ = endPosIndex + (X tours complets) + décalage pour matcher l'image ?
+                // Non, pour que ce soit seamless, il faut que visuellement :
+                // StartPosition Y affiche la carte 'info.lastIdx'.
+                
+                // Calculons un index de départ qui correspond à 'lastIdx' mais qui est loin (ex: +30 cartes)
+                const distance = 30 + Math.floor(Math.random() * 10);
+                // On cherche un index 'startPosIndex' tel que :
+                // startPosIndex > endPosIndex
+                // ET (startPosIndex % data.length) == info.lastIdx
+                
+                let startPosIndex = endPosIndex + distance;
+                const remainder = startPosIndex % info.data.length;
+                const adjustment = remainder - info.lastIdx;
+                startPosIndex -= adjustment; // Calage exact sur le bon type de carte
+                
+                const startY = -(startPosIndex * cardH);
+                const endY = -(endPosIndex * cardH);
+                
+                // 1. Reset instantané à la position de départ (qui affiche visuellement la carte précédente)
+                stripEl.style.transition = 'none';
+                stripEl.style.transform = `translateY(${startY}px)`;
+                
+                // Force Reflow
+                stripEl.offsetHeight;
+                
+                // 2. Animation vers la cible
+                stripEl.style.transition = `transform ${delays[index] / 1000}s cubic-bezier(0.25, 1, 0.5, 1)`;
+                stripEl.style.transform = `translateY(${endY}px)`;
+
+                // 3. Fin
                 setTimeout(() => {
-                    const winningCardNode = stripEl.children[targetPositionIndex];
-                    if(winningCardNode) {
-                        winningCardNode.classList.add('pop-effect');
-                    }
+                    // Highlight
+                    const finalCard = stripEl.children[endPosIndex];
+                    if(finalCard) finalCard.classList.add('pop-effect');
                     
-                    if (index === 2) {
-                        setTimeout(triggerFinalAnimation, 800);
-                    }
-
+                    if (index === 2) triggerFinalAnimation();
                 }, delays[index]);
             });
         }
@@ -685,11 +723,11 @@
             const cardsBox = document.getElementById('cards-box');
             const rect = document.getElementById('violet-border');
             
+            // Ajustement SVG
             rect.setAttribute('width', cardsBox.clientWidth);
             rect.setAttribute('height', cardsBox.clientHeight);
-            rect.setAttribute('x', 0);
-            rect.setAttribute('y', 0);
-
+            
+            // Calcul périmètre pour animation
             const perimeter = 2 * (cardsBox.clientWidth + cardsBox.clientHeight);
             rect.style.strokeDasharray = perimeter;
             rect.style.strokeDashoffset = perimeter;
@@ -697,90 +735,101 @@
             rect.classList.add('animate-border');
 
             setTimeout(() => {
-                document.getElementById('final-msg').classList.add('show');
-                setTimeout(() => {
-                    document.getElementById('ai-btn').classList.add('show');
-                    document.getElementById('replay-btn').classList.add('show');
-                }, 1000);
+                document.getElementById('ui-buttons').classList.add('visible');
             }, 1000);
         }
 
-        // --- GEMINI API INTEGRATION ---
-        async function generateInspiration() {
-            const btn = document.getElementById('ai-btn');
-            const btnText = btn.querySelector('span');
-            const contentBox = document.getElementById('ai-content');
-            const containerBox = document.getElementById('ai-result-container');
+        // --- COACH & MUSIQUE (LOGIQUE INTERNE) ---
 
-            // UI Loading state
-            btn.disabled = true;
-            btnText.innerHTML = '<span class="loading-spinner"></span> Connexion aux esprits...';
+        function showAdvice() {
+            const el = currentDraw.element;
+            const ti = currentDraw.tissu;
+            const mv = currentDraw.movement;
             
-            // Prepare Prompt
-            const prompt = `
-                Agis comme un professeur de danse contemporaine poétique et bienveillant.
-                Voici un tirage de 3 cartes pour une improvisation de danse :
-                1. Élément Naturel : ${currentDraw.element.title} (${currentDraw.element.desc})
-                2. Tissu du Corps : ${currentDraw.tissu.title} (${currentDraw.tissu.desc})
-                3. Force de Mouvement : ${currentDraw.movement.title} (${currentDraw.movement.desc})
+            // Générateur de phrase "Mad Libs" intelligent
+            const intros = [
+                "Prenez un instant pour visualiser",
+                "Laissez votre corps explorer",
+                "Imaginez la sensation de",
+                "Invitez dans votre danse"
+            ];
+            
+            const verbs = [
+                "qui s'infuse dans",
+                "guidant vos",
+                "transformant vos",
+                "réveillant vos"
+            ];
+            
+            const actions = [
+                "dans un élan de",
+                "à travers la force de",
+                "par le prisme de",
+                "en incarnant"
+            ];
 
-                Ta mission :
-                1. Rédige une courte consigne d'improvisation (3-4 phrases maximum) qui relie ces trois concepts de manière artistique pour guider le danseur.
-                2. Suggère un style de musique ou une ambiance sonore spécifique pour accompagner cette danse.
+            // Construction
+            const p1 = intros[Math.floor(Math.random() * intros.length)];
+            const p2 = verbs[Math.floor(Math.random() * verbs.length)];
+            const p3 = actions[Math.floor(Math.random() * actions.length)];
 
-                Format de réponse souhaité :
-                "🌿 **L'Invitation :** [Ta consigne ici]
-                🎵 **Ambiance Sonore :** [Ta suggestion musicale]"
-            `;
-
-            try {
-                // Call Gemini
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: prompt
-                            }]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erreur API');
-                }
-
-                const data = await response.json();
-                const text = data.candidates[0].content.parts[0].text;
-
-                // Display Result
-                contentBox.innerHTML = text.replace(/\n/g, '<br>'); // Simple formatting
-                containerBox.classList.add('visible');
-                
-                // Scroll to result
-                setTimeout(() => {
-                    containerBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }, 100);
-
-                btnText.innerText = "Inspirer ma Danse ✨"; // Reset text (keep disabled to avoid spam)
-
-            } catch (error) {
-                console.error(error);
-                contentBox.innerHTML = "Les esprits sont silencieux pour le moment (Erreur de connexion). Essayez de respirer un grand coup et réessayez.";
-                containerBox.classList.add('visible');
-                btn.disabled = false;
-                btnText.innerText = "Réessayer ✨";
+            // Logique conditionnelle simple pour enrichir
+            let advice = `${p1} <strong>${el.title}</strong> ${p2} <strong>${ti.title}</strong>, ${p3} <strong>${mv.title}</strong>.`;
+            
+            // Ajout d'une phrase spécifique basée sur les tags
+            let subAdvice = "";
+            if (el.tags.includes('feu') && mv.tags.includes('haut')) {
+                subAdvice = "Sentez l'énergie monter comme une flamme indomptable.";
+            } else if (el.tags.includes('eau') && ti.tags.includes('flux')) {
+                subAdvice = "Soyez liquide, sans début ni fin.";
+            } else if (mv.tags.includes('lent') || el.tags.includes('terre')) {
+                subAdvice = "Prenez le temps de sentir le poids et l'ancrage.";
+            } else {
+                subAdvice = `Laissez la qualité "${el.desc}" colorer votre mouvement.`;
             }
+
+            const html = `
+                <h3 style="margin:0 0 10px 0; color:var(--accent-violet)">Inspiration</h3>
+                <p>${advice}</p>
+                <p style="font-style:italic; margin-top:10px;">"${subAdvice}"</p>
+            `;
+            
+            document.getElementById('advice-content').innerHTML = html;
+            document.getElementById('advice-overlay').classList.add('visible');
         }
 
-        window.onload = () => {
-           initStrip('strip-1', dataElements);
-           initStrip('strip-2', dataTissus);
-           initStrip('strip-3', dataMouvements);
-        };
+        function hideAdvice() {
+            document.getElementById('advice-overlay').classList.remove('visible');
+        }
+
+        function openMusic() {
+            const elTags = currentDraw.element.tags;
+            const tiTags = currentDraw.tissu.tags;
+            const mvTags = currentDraw.movement.tags;
+            
+            // Système de scoring simple
+            let bestMatch = musicDatabase[0];
+            let maxScore = -1;
+
+            musicDatabase.forEach(track => {
+                let score = 0;
+                // On check les correspondances de tags
+                const allCurrentTags = [...elTags, ...tiTags, ...mvTags];
+                track.tags.forEach(t => {
+                    if (allCurrentTags.includes(t)) score += 2;
+                });
+                
+                // Aléatoire pour varier si scores égaux
+                score += Math.random();
+
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestMatch = track;
+                }
+            });
+
+            window.open(bestMatch.url, '_blank');
+        }
 
     </script>
 </body>
