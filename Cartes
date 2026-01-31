@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All ma Danse - Le Jeu</title>
+    <!-- Importation de polices pour le style Bohème -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Quicksand:wght@300;400;600&family=WindSong&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-text: #4a4a4a;
+            --accent-violet: #8a2be2;
+            --boho-bg: #fdfbf7;
+            --card-bg: #fff;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --btn-blue: #3498db;
+            --btn-blue-hover: #2980b9;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--boho-bg);
+            color: var(--primary-text);
+        }
+
+        /* Arrière-plan Bohème (Attrape-rêves simulés en CSS/SVG) */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2;
+            background-image: url('https://images.unsplash.com/photo-1542646890-0902c2db5374?q=80&w=2574&auto=format&fit=crop'); /* Image style bohème/plumes */
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+            filter: sepia(0.5) contrast(0.8);
+        }
+
+        #app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Ratio 16/9 simulation logic handled by flex centering, 
+               but responsive for modern screens */
+        }
+
+        /* --- ÉCRAN D'ACCUEIL --- */
+        #intro-screen {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 5rem;
+            width: 80%;
+            height: 80%;
+            transition: opacity 0.8s ease;
+        }
+
+        .presentation-card {
+            width: 300px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .presentation-card::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px solid #d4af37; /* Or mat */
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .presentation-title {
+            font-family: 'WindSong', cursive;
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .intro-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        h2 {
+            font-weight: 300;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .btn-go {
+            background-color: var(--btn-blue);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            font-family: 'Cinzel Decorative', cursive;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .btn-go:hover {
+            background-color: var(--btn-blue-hover);
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+        }
+
+        /* --- ÉCRAN DE JEU --- */
+        #game-screen {
+            display: none; /* Caché au départ */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 30px;
+            perspective: 1000px;
+            position: relative;
+            padding: 40px;
+        }
+
+        /* Conteneur de slot individuel */
+        .slot-machine {
+            width: 280px;
+            height: 420px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* La bande qui défile */
+        .slot-strip {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.1s linear; /* Sera manipulé par JS */
+            will-change: transform;
+        }
+
+        /* Le design d'une carte dans le slot */
+        .game-card {
+            width: 280px;
+            height: 420px;
+            flex-shrink: 0; /* Empêche le rétrécissement */
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        /* Style interne des cartes */
+        .card-category {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .card-main-text {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.8rem;
+            text-align: center;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.3;
+        }
+
+        .card-sub-text {
+            font-style: italic;
+            text-align: center;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Décoration interne carte */
+        .card-decoration {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fdfbf7;
+            border: 1px dashed #d4af37;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+
+        /* Animation Pop (Zoom) */
+        @keyframes popCard {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 15px 30px rgba(138, 43, 226, 0.2); z-index: 10; border-color: var(--accent-violet); }
+            100% { transform: scale(1); }
+        }
+
+        .pop-effect {
+            animation: popCard 0.6s ease-out forwards;
+        }
+
+        /* Cadre violet animé SVG */
+        .border-animation-container {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .border-rect {
+            fill: none;
+            stroke: var(--accent-violet);
+            stroke-width: 4;
+            stroke-dasharray: 2400; /* Assez grand pour faire le tour */
+            stroke-dashoffset: 2400; /* Caché au départ */
+            rx: 20; /* Coins arrondis */
+        }
+
+        .animate-border {
+            animation: drawBorder 2s ease-out forwards;
+        }
+
+        @keyframes drawBorder {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Texte final et Bouton Replay */
+        .final-ui-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 900px; /* Doit correspondre à peu près à la largeur des 3 cartes */
+            margin-top: 30px;
+            height: 60px;
+        }
+
+        .final-text {
+            font-family: 'WindSong', cursive;
+            font-size: 2.5rem;
+            color: var(--accent-violet);
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 1.5s ease;
+        }
+
+        .final-text.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .btn-replay {
+            background: transparent;
+            border: 2px solid #aaa;
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .btn-replay:hover {
+            border-color: var(--btn-blue);
+            color: var(--btn-blue);
+        }
+
+        .btn-replay.show {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Fond Bohème -->
+    <div class="bg-pattern"></div>
+
+    <div id="app-container">
+        
+        <!-- ÉCRAN D'ACCUEIL -->
+        <div id="intro-screen">
+            <div class="presentation-card">
+                <div class="card-decoration">✨</div>
+                <div class="presentation-title">All ma Danse</div>
+                <p style="font-style: italic; margin-top: 2rem;">Le Jeu de Cartes</p>
+            </div>
+            
+            <div class="intro-content">
+                <h1>Tentez de reproduire ce mouvement</h1>
+                <h2>prêt pour le challenge ?</h2>
+                <button class="btn-go" onclick="startGame()">GO !</button>
+            </div>
+        </div>
+
+        <!-- ÉCRAN DE JEU -->
+        <div id="game-screen">
+            
+            <div class="cards-container" id="cards-box">
+                <!-- SVG pour l'animation du cadre -->
+                <svg class="border-animation-container" width="100%" height="100%" style="overflow: visible;">
+                    <rect id="violet-border" x="-10" y="-10" width="100%" height="100%" class="border-rect" />
+                </svg>
+
+                <!-- SLOT 1 : ÉLÉMENTS -->
+                <div class="slot-machine" id="slot-1">
+                    <div class="slot-strip" id="strip-1">
+                        <!-- JS injectera les cartes ici -->
+                    </div>
+                </div>
+
+                <!-- SLOT 2 : TISSUS -->
+                <div class="slot-machine" id="slot-2">
+                    <div class="slot-strip" id="strip-2">
+                        <!-- JS injectera les cartes ici -->
+                    </div>
+                </div>
+
+                <!-- SLOT 3 : MOUVEMENTS -->
+                <div class="slot-machine" id="slot-3">
+                    <div class="slot-strip" id="strip-3">
+                        <!-- JS injectera les cartes ici -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="final-ui-container">
+                <div class="final-text" id="final-msg">A vous de jouer !!!</div>
+                <button class="btn-replay" id="replay-btn" onclick="resetGame()">Recommencer ↻</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // --- DONNÉES EXTRAITES DU PDF ---
+        const dataElements = [
+            { title: "ARGILE", desc: "absorbe", cat: "Terre", icon: "🏺" },
+            { title: "SABLE", desc: "coule - roule - bâti", cat: "Terre", icon: "🏖️" },
+            { title: "ROCHE SOLIDE", desc: "socle - dure - contient", cat: "Terre", icon: "🪨" },
+            { title: "ROCHE FRIABLE", desc: "fragile - sculpte - érode", cat: "Terre", icon: "🧱" },
+            { title: "NEIGE", desc: "matière - froid - cristallin", cat: "Eau", icon: "❄️" },
+            { title: "GLACE", desc: "transparent - froid - solide", cat: "Eau", icon: "🧊" },
+            { title: "RIVIÈRE", desc: "coule - vivant - serpente", cat: "Eau", icon: "🌊" },
+            { title: "CASCADE", desc: "tonitruant - jaillissant - sonore", cat: "Eau", icon: "⛲" },
+            { title: "GOUTTE", desc: "petite part - tout - reflet", cat: "Eau", icon: "💧" },
+            { title: "MER & OCÉAN", desc: "vagues – immense - Terre", cat: "Eau", icon: "🐋" },
+            { title: "NUAGE", desc: "vole – forme - ciel", cat: "Eau / Air", icon: "☁️" },
+            { title: "CYCLONE", desc: "spirale – danse - révolution", cat: "Air", icon: "🌀" },
+            { title: "BRISE", desc: "frais – doux - apaisant", cat: "Air", icon: "🍃" },
+            { title: "VENT FORT", desc: "déplace – courant - température", cat: "Air", icon: "💨" },
+            { title: "MURMURE", desc: "délicat – à l'oreille - inspirant", cat: "Air", icon: "🗣️" },
+            { title: "BOUGIE", desc: "éclaire – guide - présence", cat: "Feu", icon: "🕯️" },
+            { title: "FOYER", desc: "famille – cœur - réchauffe", cat: "Feu", icon: "🔥" },
+            { title: "PHOENIX", desc: "mort – ressuscite - transfiguration", cat: "Feu", icon: "🦅" },
+            { title: "VOLCAN", desc: "île – éclat - tremblement", cat: "Feu / Terre", icon: "🌋" },
+            { title: "TONNERRE", desc: "bruit – brûle - zèbre", cat: "Feu / Air", icon: "⚡" },
+            { title: "MÉDITATION", desc: "organique – intérieur - place", cat: "Espace", icon: "🧘" },
+            { title: "ÉNERGIE CHAKRAS", desc: "réseau – connexion - informer", cat: "Espace", icon: "☸️" },
+            { title: "COSMOS", desc: "infini – étendu - étoiles", cat: "Espace", icon: "🌌" },
+            { title: "ENTRE DEUX CORPS", desc: "dialogue – formes - correspondance", cat: "Espace", icon: "👥" }
+        ];
+
+        const dataTissus = [
+            { title: "OS", desc: "support – structure - permanence", cat: "Tissus", icon: "🦴" },
+            { title: "ARTICULATIONS", desc: "mouvement – plier - rotation", cat: "Tissus", icon: "🔩" },
+            { title: "MUSCLES", desc: "contracter – étirer - expandre", cat: "Tissus", icon: "💪" },
+            { title: "LIGAMENTS & TENDONS", desc: "lier - tenir - élastique", cat: "Tissus", icon: "🔗" },
+            { title: "FASCIAS", desc: "réseau – omniprésence - coulisse", cat: "Tissus", icon: "🕸️" },
+            { title: "LIQUIDES", desc: "sang, eaux, lymphe - échange", cat: "Tissus", icon: "🩸" },
+            { title: "ORGANES", desc: "fonction – poids - consistance", cat: "Tissus", icon: "🫀" },
+            { title: "PEAU", desc: "couvre – protège - contient", cat: "Tissus", icon: "✋" },
+            { title: "HORMONES", desc: "véhicule – régule - émotions", cat: "Tissus", icon: "💊" },
+            { title: "CELLULE", desc: "unité – relais - frémis", cat: "Tissus", icon: "🦠" },
+            { title: "NEURONES", desc: "informe – relie - impulse", cat: "Tissus", icon: "🧠" },
+            { title: "NERFS", desc: "transmettre - sensibiliser - commander", cat: "Tissus", icon: "⚡" }
+        ];
+
+        const dataMouvements = [
+            { title: "GRAVITÉ", desc: "chute – poids - relâchement", cat: "Mouvement", icon: "⬇️" },
+            { title: "ÉRECTION", desc: "opposer – redresser - lever", cat: "Mouvement", icon: "⬆️" },
+            { title: "SYNERGIE", desc: "continuer – tourner - toupie", cat: "Mouvement", icon: "🎡" },
+            { title: "MOMENTUM", desc: "étendre – inscrire - spirale", cat: "Mouvement", icon: "🐌" },
+            { title: "IMMOBILISATION", desc: "freiner - stopper - préciser", cat: "Mouvement", icon: "🛑" },
+            { title: "IDENTIFICATION", desc: "plonger - focusser - déterminer", cat: "Mouvement", icon: "🎯" },
+            { title: "AMPLIFICATION", desc: "augmenter - agrandir - accroitre", cat: "Mouvement", icon: "🔊" },
+            { title: "LAISSER ALLER", desc: "suivre - amuser - simplifier", cat: "Mouvement", icon: "🎈" },
+            { title: "TRANSFORMATION", desc: "orienter - changer - créer", cat: "Mouvement", icon: "🦋" },
+            { title: "IMPULSER", desc: "informer – toucher - produire", cat: "Mvt à 2", icon: "🤜" },
+            { title: "SOUTENIR", desc: "appuyer – recevoir - présence", cat: "Mvt à 2", icon: "🤲" },
+            { title: "PORTER", desc: "élever – permettre - collaborer", cat: "Mvt à 2", icon: "🏗️" },
+            { title: "POUSSER", desc: "inviter - entrer - souffler", cat: "Mvt à 2", icon: "🌬️" },
+            { title: "REFLÉTER", desc: "miroir – reproduire - servir", cat: "Mvt à 2", icon: "🪞" },
+            { title: "PRESSER", desc: "compression – ressentir - concentrer", cat: "Mvt à 2", icon: "🤏" },
+            { title: "ÉTIRER", desc: "possibles – fibres - espace", cat: "Mvt à 2", icon: "🤸" },
+            { title: "EFFLEURER", desc: "sensibiliser - orienter - éveiller", cat: "Mvt à 2", icon: "🪶" },
+            { title: "ÊTRE AVEC", desc: "écouter - harmoniser - accueillir", cat: "Mvt à 2", icon: "🤝" }
+        ];
+
+        const cardHeight = 420; // Doit correspondre à la CSS .game-card height
+
+        // Fonction pour générer le HTML d'une carte
+        function createCardHTML(data, index) {
+            return `
+                <div class="game-card">
+                    <div class="card-number">#${index + 1}</div>
+                    <div class="card-decoration">${data.icon}</div>
+                    <div>
+                        <div class="card-category">${data.cat}</div>
+                        <div class="card-main-text">${data.title}</div>
+                    </div>
+                    <div class="card-sub-text">${data.desc}</div>
+                </div>
+            `;
+        }
+
+        // Initialisation des bandes (Strips)
+        // On duplique les tableaux pour créer l'illusion de boucle infinie lors du scroll rapide
+        function initStrip(stripId, dataSource) {
+            const strip = document.getElementById(stripId);
+            strip.innerHTML = "";
+            let htmlContent = "";
+            
+            // On répète la liste 40 fois pour avoir de la marge de scroll
+            for (let i = 0; i < 40; i++) {
+                dataSource.forEach((item, idx) => {
+                    htmlContent += createCardHTML(item, idx);
+                });
+            }
+            strip.innerHTML = htmlContent;
+        }
+
+        function startGame() {
+            document.getElementById('intro-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                // Petit délai pour l'opacité
+                setTimeout(() => {
+                    document.getElementById('game-screen').style.opacity = '1';
+                    launchSlots();
+                }, 100);
+            }, 800);
+        }
+
+        function resetGame() {
+            // Reset UI
+            const rect = document.getElementById('violet-border');
+            rect.classList.remove('animate-border');
+            rect.style.strokeDashoffset = '2400';
+            
+            document.getElementById('final-msg').classList.remove('show');
+            document.getElementById('replay-btn').classList.remove('show');
+
+            // Reset Slots position visuelle
+            document.querySelectorAll('.slot-strip').forEach(el => {
+                el.style.transition = 'none';
+                el.style.transform = 'translateY(0)';
+                // Reset card animations
+                el.querySelectorAll('.game-card').forEach(c => c.classList.remove('pop-effect'));
+            });
+
+            // Relancer
+            setTimeout(launchSlots, 100);
+        }
+
+        function launchSlots() {
+            initStrip('strip-1', dataElements);
+            initStrip('strip-2', dataTissus);
+            initStrip('strip-3', dataMouvements);
+
+            const delays = [3000, 5000, 8000]; // 3s, 5s, 8s
+            const strips = [
+                { id: 'strip-1', data: dataElements },
+                { id: 'strip-2', data: dataTissus },
+                { id: 'strip-3', data: dataMouvements }
+            ];
+
+            strips.forEach((stripObj, index) => {
+                const stripEl = document.getElementById(stripObj.id);
+                
+                // 1. Choix de la carte gagnante aléatoire
+                const winningIndex = Math.floor(Math.random() * stripObj.data.length);
+                
+                // 2. Calcul de la position : On veut atterrir sur une instance de cette carte loin dans la liste
+                // On vise par exemple la 30ème répétition pour laisser le temps de scroll
+                const targetRound = 30; 
+                const targetPositionIndex = (targetRound * stripObj.data.length) + winningIndex;
+                const translateY = -(targetPositionIndex * cardHeight);
+
+                // 3. Animation CSS
+                // On force un reflow
+                stripEl.offsetHeight; 
+                
+                // Durée de l'animation = le délai (3s, 5s, 8s)
+                stripEl.style.transition = `transform ${delays[index] / 1000}s cubic-bezier(0.1, 0.9, 0.2, 1)`; // Effet ralentissement
+                stripEl.style.transform = `translateY(${translateY}px)`;
+
+                // 4. Action à la fin du mouvement
+                setTimeout(() => {
+                    // Trouver la carte spécifique qui est affichée
+                    // C'est le nième enfant du strip
+                    const winningCardNode = stripEl.children[targetPositionIndex];
+                    if(winningCardNode) {
+                        winningCardNode.classList.add('pop-effect');
+                    }
+                    
+                    // Si c'est le dernier slot (8s)
+                    if (index === 2) {
+                        setTimeout(triggerFinalAnimation, 800); // Petit buffer après le stop
+                    }
+
+                }, delays[index]);
+            });
+        }
+
+        function triggerFinalAnimation() {
+            // 1. Lancer le trait violet
+            // On doit ajuster la taille du rect SVG à la taille du conteneur de cartes
+            const cardsBox = document.getElementById('cards-box');
+            const rect = document.getElementById('violet-border');
+            
+            // Le SVG est en width 100% height 100% du cards-box, donc coordonnées simples
+            rect.setAttribute('width', cardsBox.clientWidth);
+            rect.setAttribute('height', cardsBox.clientHeight);
+            rect.setAttribute('x', 0);
+            rect.setAttribute('y', 0);
+
+            // Recalcul dasharray pour faire tout le tour
+            const perimeter = 2 * (cardsBox.clientWidth + cardsBox.clientHeight);
+            rect.style.strokeDasharray = perimeter;
+            rect.style.strokeDashoffset = perimeter;
+
+            rect.classList.add('animate-border');
+
+            // 2. Faire apparaitre le texte et le bouton
+            setTimeout(() => {
+                document.getElementById('final-msg').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('replay-btn').classList.add('show');
+                }, 1000);
+            }, 1000); // Commence pendant que le trait se dessine
+        }
+
+        // Init au chargement
+        window.onload = () => {
+           // Pré-remplissage invisible pour caler la layout si besoin
+           initStrip('strip-1', dataElements);
+           initStrip('strip-2', dataTissus);
+           initStrip('strip-3', dataMouvements);
+        };
+
+    </script>
+</body>
+</html>
